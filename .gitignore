@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+.env
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+*.egg-info/
+
+# Research runs produced by the CLI are local artifacts, not source —
+# keep one committed example (runs/example_research/) for the README
+# quickstart, ignore the rest.
+runs/*
+!runs/.gitkeep
+!runs/example_research/
+!runs/example_research/run.json
+!runs/example_research/academic_report.pdf
+
+# Same pattern for generated evaluation reports.
+evals/reports/*
+!evals/reports/.gitkeep

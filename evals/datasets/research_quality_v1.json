@@ -1,0 +1,41 @@
+{
+  "id": "research_quality",
+  "version": "1",
+  "name": "Research Quality v1",
+  "metadata": {
+    "description": "Small deterministic dataset for the offline evaluation core.",
+    "fixture": "evals/fixtures/vector_db_corpus.json"
+  },
+  "cases": [
+    {
+      "id": "vector_db_postgres",
+      "question": "Which vector database works directly in Postgres?",
+      "expected": {
+        "answer_contains": [
+          "pgvector",
+          "PostgreSQL"
+        ],
+        "source_urls": [
+          "https://fixture.example/pgvector-overview"
+        ],
+        "claims": [
+          "pgvector adds vector columns and similarity search directly to PostgreSQL"
+        ],
+        "evidence_contains": [
+          "pgvector adds vector columns and similarity search"
+        ]
+      },
+      "policy": {
+        "max_steps": 5,
+        "max_tool_calls": 5,
+        "allowed_tools": [
+          "web_search"
+        ]
+      },
+      "metadata": {
+        "topic": "vector databases",
+        "offline": true
+      }
+    }
+  ]
+}

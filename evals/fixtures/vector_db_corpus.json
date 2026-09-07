@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://fixture.example/pgvector-overview",
+    "title": "pgvector: Open-source vector similarity search for Postgres",
+    "snippet": "pgvector adds vector columns and similarity search (cosine, L2, inner product) directly to PostgreSQL. Good fit when you already run Postgres and want to avoid a second database."
+  },
+  {
+    "url": "https://fixture.example/pinecone-overview",
+    "title": "Pinecone: managed vector database",
+    "snippet": "Pinecone is a fully managed vector database built for production RAG at scale, with automatic scaling and no infrastructure to operate."
+  },
+  {
+    "url": "https://fixture.example/weaviate-overview",
+    "title": "Weaviate: open-source vector search engine",
+    "snippet": "Weaviate is an open-source vector database with hybrid search (vector + keyword) and built-in modules for embeddings."
+  },
+  {
+    "url": "https://fixture.example/milvus-overview",
+    "title": "Milvus: vector database for AI applications",
+    "snippet": "Milvus is designed for billion-scale vector search with multiple index types (IVF, HNSW, DiskANN) and horizontal scaling."
+  },
+  {
+    "url": "https://fixture.example/production-tradeoffs",
+    "title": "Choosing a vector database for production RAG",
+    "snippet": "For small to medium datasets already on Postgres, pgvector avoids operational overhead. For very large scale or when you need a dedicated managed service, Pinecone or Milvus are usually recommended instead."
+  },
+  {
+    "url": "https://fixture.example/contrarian-take",
+    "title": "Why pgvector is not enough at scale",
+    "snippet": "Some practitioners argue pgvector's HNSW implementation lags behind dedicated vector databases like Milvus for very large (100M+) datasets, disagreeing with the common 'just use pgvector' advice."
+  }
+]

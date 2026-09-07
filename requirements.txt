@@ -1,0 +1,5 @@
+pydantic==2.10.4
+pydantic-settings==2.7.1
+httpx==0.28.1
+typer==0.16.1
+reportlab==5.0.1
