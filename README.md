@@ -1,6 +1,6 @@
 # AI Research Agent
 
-**An agentic research engine for autonomous web research, evidence tracking, reproducible execution, crash recovery, evaluation, and ABNT-oriented academic document generation.**
+**Um motor de pesquisa agentic para pesquisa web autônoma, rastreamento de evidências, execução reproduzível, recuperação de falhas, avaliação, e geração de documentos acadêmicos orientados por ABNT.**
 
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Tests](https://img.shields.io/badge/tests-649%20passing-brightgreen)
@@ -9,13 +9,13 @@
 ![mypy](https://img.shields.io/badge/types-mypy-blue)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF)
 
-> No license file exists yet — this repository has no license decision made, so no license badge is shown and no license terms are implied.
+> Não existe arquivo de licença neste repositório — nenhuma decisão de licença foi tomada, então nenhum badge de licença é mostrado e nenhum termo de licença é implícito.
 
 ---
 
-## Demo
+## Demonstração
 
-A completed research run, replayed **100% offline** (no OpenAI, no Brave, no network) to prove it reproduces exactly what was persisted:
+Uma pesquisa já concluída, reproduzida **100% offline** (sem OpenAI, sem Brave, sem rede) para provar que ela reproduz exatamente o que foi persistido:
 
 ```text
 $ python -m app.cli replay 803856a9-3de7-4d8c-9393-4f328ff8a2ee
@@ -34,69 +34,69 @@ Replay Verification
   Differences: none
 ```
 
-The same completed run, turned into an ABNT-oriented academic PDF — **no API key, no network, generated purely from the persisted run**:
+A mesma pesquisa concluída, transformada em um trabalho acadêmico em PDF orientado por ABNT — **sem API key, sem rede, gerado puramente a partir do run persistido**:
 
 ```text
 $ python -m app.cli academic-report example_research
 Academic report written to runs\example_research\academic_report.pdf
 ```
 
-| Cover | Table of contents |
+| Capa | Sumário |
 |---|---|
-| ![Academic report cover](docs/images/academic-cover.png) | ![Table of contents with real page numbers](docs/images/academic-toc.png) |
+| ![Capa do relatório acadêmico](docs/images/academic-cover.png) | ![Sumário com números de página reais](docs/images/academic-toc.png) |
 
-| Content with traceable citation | References |
+| Conteúdo com citação rastreável | Referências |
 |---|---|
-| ![Research content with a [1] citation marker](docs/images/academic-content.png) | ![References section matching the citation](docs/images/academic-references.png) |
+| ![Conteúdo da pesquisa com marcador de citação [1]](docs/images/academic-content.png) | ![Seção de referências correspondente à citação](docs/images/academic-references.png) |
 
-All four images above are real renders of a PDF this project generated in this repository's own `runs/example_research/` — not mockups.
+As quatro imagens acima são renderizações reais de um PDF que este projeto gerou dentro do próprio `runs/example_research/` do repositório — não são mockups.
 
 ---
 
-## The problem
+## O problema
 
-Web research that's actually trustworthy is not "ask an LLM a question and print the answer." A system that does it responsibly has to handle:
+Pesquisar na web de forma realmente confiável não é "perguntar pra um LLM e imprimir a resposta". Um sistema que faz isso com responsabilidade precisa lidar com:
 
-- **Planning and tool selection** across multiple steps, not a single prompt/response;
-- **Evidence provenance** — every claim needs to trace back to a specific source, not just sound plausible;
-- **Execution limits** — an autonomous loop needs hard bounds (steps, tool calls, timeouts) or it can run forever or loop;
-- **Failure and recovery** — a process can crash mid-research; that shouldn't mean starting over or losing everything;
-- **Reproducibility** — being able to prove *why* a run produced a given answer, after the fact, without re-spending API budget;
-- **Evaluation** — a way to measure quality across runs, not just eyeball one output;
-- **Security** — content pulled from the web is attacker-influenced input, not trusted instructions;
-- **Output** — a persisted result is only useful if it can become something a human actually reads (a report, or a citable academic document).
+- **Planejamento e seleção de ferramentas** em múltiplas etapas, não um único prompt/resposta;
+- **Proveniência de evidência** — cada afirmação precisa ser rastreável até uma fonte específica, não apenas soar plausível;
+- **Limites de execução** — um loop autônomo precisa de limites rígidos (steps, tool calls, timeouts) ou pode rodar para sempre ou entrar em loop;
+- **Falha e recuperação** — um processo pode cair no meio da pesquisa; isso não deveria significar recomeçar do zero ou perder tudo;
+- **Reprodutibilidade** — conseguir provar *por que* uma execução produziu determinada resposta, depois do fato, sem gastar orçamento de API de novo;
+- **Avaliação** — uma forma de medir qualidade entre execuções, não só "olhar" um resultado;
+- **Segurança** — conteúdo vindo da web é input potencialmente hostil, não instrução confiável;
+- **Saída** — um resultado persistido só é útil se puder virar algo que um humano realmente lê (um relatório, ou um documento citável).
 
-This project treats all of that as first-class engineering, not an afterthought bolted onto a chatbot loop.
+Este projeto trata tudo isso como engenharia de primeira classe, não como um detalhe adicionado depois em cima de um loop de chatbot.
 
-## What the project does
+## O que o projeto faz
 
-- **Agentic research** — a PLAN → SELECT TOOL → EXECUTE → OBSERVE → DECIDE → SYNTHESIZE loop, driven by structured, Pydantic-validated LLM decisions (never free-text-parsed-as-commands).
-- **Tools**: `web_search`, `fetch_url` (with real SSRF hardening — DNS-rebinding-resistant, redirect-validating), `calculator` (AST-based, no `eval`).
-- **Evidence tracking**: `Source → Evidence → Claim → Citation`, validated end to end.
-- **Synthesis**: a structured `FinalAnswer` that can only cite evidence that actually exists.
-- **Persistence**: every run is a `RunRecord`, saved atomically to disk.
-- **Checkpoints & crash recovery** (`resume`): a killed process can be resumed from its last consistent checkpoint.
-- **Replay**: reproduce a finished run's own recorded trace, 100% offline, and detect divergence.
-- **Execution policies**: step/tool-call/timeout limits enforced *before* the operation they bound.
-- **Evaluation**: a deterministic, offline scoring framework against a dataset.
-- **Structured logging**: lifecycle events, never prompts/completions/secrets.
-- **Academic PDF generation**: turn any completed run into an ABNT-oriented PDF with real, traceable citations.
-- **Security controls**: SSRF defense, prompt-injection-as-data, no `eval`/`exec`/`pickle`, path-traversal-safe run IDs.
+- **Pesquisa agentic** — um loop PLAN → SELECT TOOL → EXECUTE → OBSERVE → DECIDE → SYNTHESIZE, guiado por decisões de LLM estruturadas e validadas por Pydantic (nunca texto livre interpretado como comando).
+- **Tools**: `web_search`, `fetch_url` (com hardening real contra SSRF — resistente a DNS rebinding, validando redirects), `calculator` (baseado em AST, sem `eval`).
+- **Rastreamento de evidências**: `Source → Evidence → Claim → Citation`, validado de ponta a ponta.
+- **Síntese**: um `FinalAnswer` estruturado que só pode citar evidência que realmente existe.
+- **Persistência**: cada execução é um `RunRecord`, salvo atomicamente em disco.
+- **Checkpoints e recuperação de falhas** (`resume`): um processo morto pode ser retomado do último checkpoint consistente.
+- **Replay**: reproduz o trace já registrado de uma execução concluída, 100% offline, e detecta divergência.
+- **Políticas de execução**: limites de step/tool-call/timeout aplicados *antes* da operação que eles limitam.
+- **Avaliação**: um framework de scoring determinístico e offline.
+- **Logging estruturado**: eventos de ciclo de vida, nunca prompts/completions/segredos.
+- **Geração de PDF acadêmico**: transforma qualquer execução concluída em um PDF orientado por ABNT com citações realmente rastreáveis.
+- **Controles de segurança**: defesa contra SSRF, prompt injection tratado como dado, sem `eval`/`exec`/`pickle`, run IDs seguros contra path traversal.
 
-Two Large Language Model providers are supported today, behind the same `LLMProvider`/`SynthesisProvider` interface: **OpenAI** and **Anthropic (Claude)**.
+Dois providers de LLM são suportados hoje, atrás da mesma interface `LLMProvider`/`SynthesisProvider`: **OpenAI** e **Anthropic (Claude)**.
 
-## Architecture
+## Arquitetura
 
 ```mermaid
 flowchart TD
-    User([User]) --> CLI[CLI — app/cli]
+    User([Usuário]) --> CLI[CLI — app/cli]
     CLI --> Composition[Composition root]
     Composition --> Orchestrator[ResearchOrchestrator]
-    Orchestrator --> Agent[Agent: PLAN / EXECUTE / OBSERVE loop]
-    Agent --> LLM[LLMProvider — OpenAI or Anthropic]
+    Orchestrator --> Agent[Agent: loop PLAN / EXECUTE / OBSERVE]
+    Agent --> LLM[LLMProvider — OpenAI ou Anthropic]
     Agent --> Tools[ToolRegistry]
     Tools --> WebSearch[WebSearchTool]
-    Tools --> FetchURL[FetchURLTool — SSRF-hardened]
+    Tools --> FetchURL[FetchURLTool — protegido contra SSRF]
     Tools --> Calculator[CalculatorTool]
     Agent --> Evidence[EvidencePipeline]
     Evidence --> EvidenceGraph[Source / Evidence / Claim]
@@ -104,44 +104,44 @@ flowchart TD
     Synthesis --> Answer[FinalAnswer + Citations]
     Orchestrator --> Persistence[RunService / FileRunRepository]
     Persistence --> Replay[ReplayService — offline]
-    Persistence --> Resume[ResumeService — real recovery]
-    Persistence --> Evaluation[Evaluation framework]
-    Persistence --> Reports[Report generators]
+    Persistence --> Resume[ResumeService — recuperação real]
+    Persistence --> Evaluation[Framework de avaliação]
+    Persistence --> Reports[Geradores de relatório]
     Reports --> Markdown[MarkdownReportRenderer]
-    Reports --> Academic[AcademicPDFRenderer — ABNT-oriented]
+    Reports --> Academic[AcademicPDFRenderer — orientado por ABNT]
 ```
 
-This is the real, current architecture — nothing here is aspirational.
+Esta é a arquitetura real e atual — nada aqui é aspiracional.
 
-## The Agent loop
+## O loop do Agent
 
 ```mermaid
 flowchart LR
-    A[RECEIVE question] --> B[PLAN: LLM decision]
-    B --> C{Action?}
+    A[RECEIVE pergunta] --> B[PLAN: decisão do LLM]
+    B --> C{Ação?}
     C -->|tool_call| D[EXECUTE tool]
-    D --> E[OBSERVE result]
-    E --> F[Merge into Evidence Pipeline]
+    D --> E[OBSERVE resultado]
+    E --> F[Merge no Evidence Pipeline]
     F --> G[Checkpoint]
     G --> B
-    C -->|finish| H[Terminate]
+    C -->|finish| H[Termina]
     C -->|synthesize| I[SYNTHESIZE]
     I --> J[FinalAnswer + Citations]
-    J --> K[Persist RunRecord]
+    J --> K[Persiste RunRecord]
     H --> K
 ```
 
-Every decision is a validated Pydantic model (`LLMDecision`), never interpreted free text. Every limit (`max_steps`, `max_tool_calls`, `max_same_tool_calls`, `global_timeout_seconds`, `per_tool_timeout_seconds`) is checked **before** the operation it bounds, not logged as a violation after the fact.
+Cada decisão é um modelo Pydantic validado (`LLMDecision`), nunca texto livre interpretado. Cada limite (`max_steps`, `max_tool_calls`, `max_same_tool_calls`, `global_timeout_seconds`, `per_tool_timeout_seconds`) é verificado **antes** da operação que ele limita, não registrado como violação depois do fato.
 
-## Evidence & traceability
+## Evidência e rastreabilidade
 
 ```
 Claim ──→ Evidence ──→ Source ──→ Citation ──→ Report / PDF
 ```
 
-This chain is validated by the domain model itself (`ResearchState.validate_evidence_graph`) and reused — never recreated — by both the Markdown report and the academic PDF. A claim's citation numbers are derived strictly from the sources its own evidence actually reaches; a source that was fetched but never used by any claim gets no citation number. **No claim, citation, or reference is ever fabricated** — if the data isn't there, the section is either omitted or says so explicitly.
+Essa cadeia é validada pelo próprio modelo de domínio (`ResearchState.validate_evidence_graph`) e reaproveitada — nunca recriada — tanto pelo relatório Markdown quanto pelo PDF acadêmico. Os números de citação de uma claim são derivados estritamente das fontes que sua própria evidência de fato alcança; uma fonte que foi buscada mas nunca usada por nenhuma claim não recebe número de citação. **Nenhuma claim, citação ou referência é inventada** — se o dado não existe, a seção é omitida ou diz isso explicitamente.
 
-Real example, from `runs/example_research/`:
+Exemplo real, de `runs/example_research/`:
 
 ```
 4 RESULTADOS E ANÁLISE
@@ -151,43 +151,43 @@ REFERÊNCIAS
     [1] PARIS FACTS. Disponível em: https://example.com/paris-facts. Acesso em: 06 set. 2026.
 ```
 
-## Academic Report Generation
+## Geração de Trabalho Acadêmico
 
-Any **completed** research run can be turned into an ABNT-oriented academic PDF:
+Qualquer execução de pesquisa **concluída** pode virar um PDF acadêmico orientado por ABNT:
 
 ```mermaid
 flowchart LR
-    RunRecord[RunRecord\npersisted, complete] --> Builder[AcademicReportBuilder]
-    Builder --> Report[AcademicReport\nstructured data]
+    RunRecord[RunRecord\npersistido, completo] --> Builder[AcademicReportBuilder]
+    Builder --> Report[AcademicReport\ndados estruturados]
     Report --> Renderer[AcademicPDFRenderer]
     Renderer --> PDF[academic_report.pdf]
 ```
 
-**The PDF is generated from the persisted research run and does not execute a new research cycle** — no LLM call, no tool call, no network access, no API key required. Anyone who clones this repository can generate `runs/example_research/academic_report.pdf` immediately.
+**O PDF é gerado a partir da execução de pesquisa persistida e não executa um novo ciclo de pesquisa** — sem chamada a LLM, sem chamada a tool, sem acesso à rede, sem necessidade de API key. Qualquer pessoa que clonar este repositório consegue gerar `runs/example_research/academic_report.pdf` imediatamente.
 
 ```bash
 python -m app.cli academic-report example_research
 # -> runs/example_research/academic_report.pdf
 ```
 
-What it includes: capa, folha de rosto, resumo + palavras-chave, sumário (with **real** page numbers, via reportlab's `TableOfContents`/`multiBuild`), INTRODUÇÃO, METODOLOGIA, DESENVOLVIMENTO, RESULTADOS E ANÁLISE (only if there are citable claims), DISCUSSÃO (only if the answer was incomplete or errors were recorded), CONCLUSÃO, REFERÊNCIAS. The structure adapts to what the run actually produced — it never forces an empty section.
+O que está incluído: capa, folha de rosto, resumo + palavras-chave, sumário (com números de página **reais**, via `TableOfContents`/`multiBuild` do reportlab), INTRODUÇÃO, METODOLOGIA, DESENVOLVIMENTO, RESULTADOS E ANÁLISE (só se houver claims citáveis), DISCUSSÃO (só se a resposta foi incompleta ou erros foram registrados), CONCLUSÃO, REFERÊNCIAS. A estrutura se adapta ao que a execução realmente produziu — nunca força uma seção vazia.
 
-Default academic metadata (all overridable via CLI flags, never hardcoded into the renderer):
+Metadados acadêmicos padrão (todos sobrescrevíveis via flags do CLI, nunca hardcoded no renderer):
 
-| Field | Default |
+| Campo | Padrão |
 |---|---|
-| Author | Leonardo Teixeira |
-| Registration (RA) | 245602 |
-| Institution | Universidade Estadual de Campinas – UNICAMP |
-| Unit | Faculdade de Engenharia Agrícola – FEAGRI |
-| City | Campinas – SP |
-| Year | current year |
+| Autor | Leonardo Teixeira |
+| RA | 245602 |
+| Instituição | Universidade Estadual de Campinas – UNICAMP |
+| Unidade | Faculdade de Engenharia Agrícola – FEAGRI |
+| Cidade | Campinas – SP |
+| Ano | ano corrente |
 
-ABNT coverage is documented precisely, not oversold — see [docs/academic-report.md](docs/academic-report.md) for the full pipeline, the exact rules implemented, and the ones that aren't.
+A cobertura ABNT é documentada com precisão, não superestimada — veja [docs/academic-report.md](docs/academic-report.md) para o pipeline completo, as regras exatamente implementadas e as que não são.
 
-## Example
+## Exemplo
 
-The full pipeline, using the run committed at `runs/example_research/run.json` (question: *"What is the capital of France?"*), demonstrable without any API key:
+O pipeline completo, usando o run commitado em `runs/example_research/run.json` (pergunta: *"What is the capital of France?"*), demonstrável sem nenhuma API key:
 
 ```bash
 python -m app.cli show example_research
@@ -196,102 +196,102 @@ python -m app.cli replay example_research
 python -m app.cli academic-report example_research
 ```
 
-`show` and `report` render the persisted run as text/Markdown; `replay` reproduces it offline and confirms `Equivalent: YES`; `academic-report` produces the PDF shown in the Demo section above.
+`show` e `report` renderizam o run persistido como texto/Markdown; `replay` o reproduz offline e confirma `Equivalent: YES`; `academic-report` produz o PDF mostrado na seção Demonstração acima.
 
 ## Quickstart
 
 ```bash
-git clone <this-repo>
+git clone <este-repositorio>
 cd ai-research-agent
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-cp .env.example .env       # defaults already work in mock mode, no API keys needed
+cp .env.example .env       # os defaults já funcionam em modo mock, sem API keys
 ```
 
 ```bash
 python -m app.cli --help
-python -m app.cli runs                    # lists the committed example_research run
+python -m app.cli runs                    # lista o run example_research commitado
 python -m app.cli academic-report example_research
-pytest -q                                  # exercises the full Agent/tools/evidence/synthesis/
-                                            # persistence/replay/resume stack offline, with mocks
+pytest -q                                  # exercita todo o stack Agent/tools/evidence/synthesis/
+                                            # persistence/replay/resume offline, com mocks
 ```
 
-`run` (executing brand-new research) refuses to run in mock mode by design — see "Design Decisions" below. To run real research:
+`run` (executar uma pesquisa nova) se recusa a rodar em modo mock por design — ver "Decisões de Arquitetura" abaixo. Para rodar pesquisa real:
 
 ```text
 # .env
 USE_MOCK_PROVIDERS=false
-LLM_PROVIDER=openai        # or "anthropic"
+LLM_PROVIDER=openai        # ou "anthropic"
 OPENAI_API_KEY=sk-...
 SEARCH_API_KEY=...
 ```
 
 ```bash
-python -m app.cli run "your question here"
-python -m app.cli resume <run_id>          # only if the run was left incomplete by a crash
+python -m app.cli run "sua pergunta aqui"
+python -m app.cli resume <run_id>          # só se o run ficou incompleto por um crash
 ```
 
 ## CLI
 
-| Command | Description |
+| Comando | Descrição |
 |---|---|
-| `run` | Execute new research end-to-end. Requires live credentials (see Quickstart). |
-| `runs` | List persisted runs, with completion status. |
-| `show` | Show a summary of one persisted run. |
-| `report` | Render the Markdown report for one persisted run. |
-| `replay` | Reproduce a finished run 100% offline and verify it against what was recorded. |
-| `resume` | Continue an interrupted (checkpointed but unfinished) run, using real providers. |
-| `academic-report` | Render an ABNT-oriented academic PDF from a completed run. |
-| `evaluate` | Score persisted runs against a dataset, or compare two saved evaluation results. |
+| `run` | Executa uma pesquisa nova, de ponta a ponta. Exige credenciais reais (ver Quickstart). |
+| `runs` | Lista os runs persistidos, com status de conclusão. |
+| `show` | Mostra o resumo de um run persistido. |
+| `report` | Renderiza o relatório Markdown de um run persistido. |
+| `replay` | Reproduz um run concluído 100% offline e verifica contra o que foi registrado. |
+| `resume` | Continua um run interrompido (com checkpoint, mas incompleto), usando providers reais. |
+| `academic-report` | Renderiza um PDF acadêmico orientado por ABNT a partir de um run concluído. |
+| `evaluate` | Avalia runs persistidos contra um dataset, ou compara dois resultados de avaliação salvos. |
 
-Full flags for each command: `python -m app.cli <command> --help`.
+Flags completas de cada comando: `python -m app.cli <comando> --help`.
 
 ## Replay
 
-`replay` proves a finished run is internally consistent with its own recorded trace — **100% offline**:
+`replay` prova que um run concluído é internamente consistente com seu próprio trace registrado — **100% offline**:
 
-- Never calls OpenAI/Anthropic (a `ReplayLLMProvider` replays the persisted decisions in order);
-- Never calls a real tool or the network (a `ReplayToolRegistry` replays the persisted tool results, matched by `call_id`);
-- Never calls a synthesis provider (a `ReplaySynthesisProvider` replays the persisted `FinalAnswer`);
-- Compares the reproduced state to the original and reports `equivalent: true/false` plus a diff, ignoring naturally nondeterministic fields (UUIDs, timestamps, elapsed time, token usage).
+- Nunca chama OpenAI/Anthropic (um `ReplayLLMProvider` reproduz as decisões persistidas, em ordem);
+- Nunca chama uma tool real ou a rede (um `ReplayToolRegistry` reproduz os resultados de tool persistidos, casados por `call_id`);
+- Nunca chama um provider de síntese (um `ReplaySynthesisProvider` reproduz o `FinalAnswer` persistido);
+- Compara o estado reproduzido com o original e reporta `equivalent: true/false` mais um diff, ignorando campos naturalmente não-determinísticos (UUIDs, timestamps, tempo decorrido, uso de tokens).
 
-This does **not** prove a real LLM would make the same decisions again — it proves the persisted record is self-consistent.
+Isso **não** prova que um LLM real tomaria as mesmas decisões de novo — prova que o registro persistido é internamente consistente consigo mesmo.
 
-## Resume / Crash recovery
+## Resume / Recuperação de falhas
 
-Real runs checkpoint after every completed Agent step (decision + tool calls + evidence merge + observation), atomically (temp file + `os.replace`) — a crash mid-run leaves the last checkpoint intact and the run identifiable as incomplete. `resume <run_id>`:
+Execuções reais fazem checkpoint depois de cada step concluído do Agent (decisão + tool calls + merge de evidência + observação), atomicamente (arquivo temporário + `os.replace`) — um crash no meio deixa o último checkpoint íntegro e o run identificável como incompleto. `resume <run_id>`:
 
-- Uses the run's own persisted `run_id`, question, and `ExecutionPolicy` — never a new identity, never a different policy;
-- Continues the Agent loop from its last checkpointed step if it was interrupted mid-loop, or finishes only the pending synthesis/persistence if the Agent had already concluded;
-- Refuses (with a clear error) to resume an already-finished run;
-- Detects and rejects a second, concurrent `resume` of the same run (a local, file-based lock — not a distributed one).
+- Usa o `run_id`, a pergunta e a `ExecutionPolicy` já persistidos do próprio run — nunca uma nova identidade, nunca uma policy diferente;
+- Continua o loop do Agent a partir do último checkpoint se ele foi interrompido no meio do loop, ou só finaliza a síntese/persistência pendente se o Agent já tinha concluído;
+- Recusa (com erro claro) retomar um run já finalizado;
+- Detecta e rejeita um segundo `resume` concorrente do mesmo run (um lock local baseado em arquivo — não um lock distribuído).
 
-**Honestly**: exactly-once execution is not guaranteed. If a crash happens after a real LLM/tool call but before that step's checkpoint, resume retries the whole step from scratch — which may repeat that call. The three built-in tools are read-only/side-effect-free, so repeating them is safe (if occasionally wasteful); this is not a general idempotency guarantee for future tools.
+**Com honestidade**: execução exactly-once não é garantida. Se um crash acontecer depois de uma chamada real ao LLM/tool mas antes do checkpoint daquele step, o resume repete o step inteiro do zero — o que pode repetir aquela chamada. As três tools atuais são read-only/sem efeito colateral, então repetir é seguro (ainda que às vezes desperdice uma chamada) — isso não é uma garantia geral de idempotência para tools futuras.
 
 ## Evaluation
 
-An offline, deterministic scoring core: consumes persisted `RunRecord`s and a versioned JSON dataset, runs structural evaluators (answer, citations, evidence, execution, errors, policy, structural grounding), aggregates metrics, applies thresholds, and renders JSON/Markdown reports. Never touches the Agent, tools, providers, or the network.
+Um núcleo de scoring offline e determinístico: consome `RunRecord`s persistidos e um dataset JSON versionado, roda evaluators estruturais (resposta, citações, evidência, execução, erros, policy, grounding estrutural), agrega métricas, aplica thresholds, e renderiza relatórios JSON/Markdown. Nunca toca o Agent, tools, providers, ou a rede.
 
 ```bash
 python -m app.cli evaluate --dataset evals/datasets/research_quality_v1.json --run example_research
 ```
 
-Structural grounding means verifying `claim -> evidence -> source` relationships exist — it does not prove semantic factuality.
+Grounding estrutural significa verificar que as relações `claim -> evidence -> source` existem — não prova factualidade semântica.
 
-## Security
+## Segurança
 
-- **SSRF hardening**: `fetch_url` rejects userinfo, localhost, and private/loopback/link-local/reserved/multicast/unspecified IPv4/IPv6 — on the literal hostname *and* on every resolved address (defends DNS rebinding); redirects are validated hop-by-hop; HTTPS→HTTP downgrades are blocked. Proven under real concurrency by `test_concurrent_fetches_use_isolated_pinned_backends`.
-- **Prompt injection is always data**: content from a claim, source, or evidence is placed inside a JSON payload in the LLM request's `user` role — never concatenated into the `system` message. Verified by `TestPromptInjectionBoundary`, which injects `"Ignore previous instructions..."` and confirms it never reaches the system prompt.
-- **No `eval`/`exec`/`pickle`/`subprocess`/`os.system`** anywhere in `app/` — confirmed by a global source search (the only hit is a comment in `CalculatorTool` explaining why `eval()` is *not* used; it parses expressions via `ast`).
-- **Path traversal**: run IDs are regex-validated (`^[A-Za-z0-9_-]+$`) before ever touching the filesystem.
-- **Execution policies** enforced before the bounded operation, not logged after.
-- **Concurrent-resume protection**: a local lock file prevents two `resume` processes from racing the same run.
-- **Logging discipline**: structured events carry run/step/tool identifiers and error types — never prompts, completions, API keys, or full tool payloads.
+- **Hardening contra SSRF**: `fetch_url` rejeita userinfo, localhost, e IPv4/IPv6 privado/loopback/link-local/reservado/multicast/unspecified — tanto no hostname literal quanto em todo endereço resolvido (defende contra DNS rebinding); redirects são validados hop a hop; downgrades HTTPS→HTTP são bloqueados. Comprovado sob concorrência real por `test_concurrent_fetches_use_isolated_pinned_backends`.
+- **Prompt injection é sempre dado**: conteúdo de uma claim, source, ou evidência é colocado dentro de um payload JSON no papel `user` da requisição ao LLM — nunca concatenado na mensagem `system`. Verificado por `TestPromptInjectionBoundary`, que injeta `"Ignore previous instructions..."` e confirma que isso nunca chega ao prompt de sistema.
+- **Sem `eval`/`exec`/`pickle`/`subprocess`/`os.system`** em nenhum lugar de `app/` — confirmado por uma busca global no código-fonte (a única ocorrência é um comentário em `CalculatorTool` explicando por que `eval()` *não* é usado; ele faz parse de expressões via `ast`).
+- **Path traversal**: run IDs são validados por regex (`^[A-Za-z0-9_-]+$`) antes de tocarem o filesystem.
+- **Políticas de execução** aplicadas antes da operação limitada, não registradas depois.
+- **Proteção contra resume concorrente**: um arquivo de lock local impede que dois processos `resume` disputem o mesmo run.
+- **Disciplina de logging**: eventos estruturados carregam identificadores de run/step/tool e tipos de erro — nunca prompts, completions, API keys, ou payloads completos de tools.
 
-This is the complete picture — nothing has been abridged for the README; see [docs/architecture.md](docs/architecture.md) for the exact code locations backing each claim above.
+Este é o quadro completo — nada foi resumido só para o README; veja [docs/architecture.md](docs/architecture.md) para os locais exatos do código que sustentam cada afirmação acima.
 
-## Testing
+## Testes
 
 ```bash
 pytest -q
@@ -300,97 +300,97 @@ ruff check .
 mypy app
 ```
 
-Current, verified state:
+Estado atual, validado:
 
-- **649 tests passing**
-- **97% coverage** on `app`
-- **Ruff**: clean
-- **mypy `app`**: clean
-- **mypy `app tests`**: 2 pre-existing errors in `tests/integration/test_orchestrator_e2e.py` (structural typing variance in `Tool`/`MockLLMProvider`, predating this work; fixing them would require widening a public type signature, which is out of scope for a test-only fix)
+- **649 testes passando**
+- **97% de cobertura** em `app`
+- **Ruff**: limpo
+- **mypy `app`**: limpo
+- **mypy `app tests`**: 2 erros pré-existentes em `tests/integration/test_orchestrator_e2e.py` (variância estrutural de tipo em `Tool`/`MockLLMProvider`, anteriores a este trabalho; corrigi-los exigiria alargar uma assinatura de tipo pública, fora do escopo de uma correção só de teste)
 
-Tests span unit, integration, security (SSRF, prompt injection, path traversal), persistence/atomicity, replay, crash-recovery, and concurrency — not just the happy path.
+Os testes cobrem unit, integração, segurança (SSRF, prompt injection, path traversal), persistência/atomicidade, replay, recuperação de falhas, e concorrência — não só o caminho feliz.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every push/PR to `main`: checkout → Python 3.11 → `pip install -r requirements-dev.txt` → `ruff check .` → `mypy app` → `pytest -q --cov=app`. Deterministic and offline after dependency installation — no external services, no database, no real LLM calls, no deploy.
+`.github/workflows/ci.yml` roda em todo push/PR para `main`: checkout → Python 3.11 → `pip install -r requirements-dev.txt` → `ruff check .` → `mypy app` → `pytest -q --cov=app`. Determinística e offline depois da instalação de dependências — sem serviços externos, sem banco de dados, sem chamadas reais a LLM, sem deploy.
 
-## Project structure
+## Estrutura do projeto
 
 ```text
 app/
-├── agent/        # the PLAN/EXECUTE/OBSERVE loop
-├── tools/        # web_search, fetch_url (SSRF-hardened), calculator
-├── evidence/     # Source/Evidence merge pipeline
-├── synthesis/    # FinalAnswer generation + validation
-├── persistence/  # RunRecord storage, atomic writes, schema versioning
-├── replay/       # 100% offline reproduction of a finished run
-├── resume/       # crash recovery for an unfinished run
-├── evaluation/   # offline, deterministic scoring
-├── academic/     # ABNT-oriented academic PDF generation
-├── reports/      # Markdown report rendering
-├── providers/    # OpenAI / Anthropic / mock LLM & search providers
-├── schemas/      # the domain's Pydantic models
+├── agent/        # o loop PLAN/EXECUTE/OBSERVE
+├── tools/        # web_search, fetch_url (protegido contra SSRF), calculator
+├── evidence/     # pipeline de merge de Source/Evidence
+├── synthesis/    # geração e validação de FinalAnswer
+├── persistence/  # armazenamento de RunRecord, escrita atômica, versionamento de schema
+├── replay/       # reprodução 100% offline de um run concluído
+├── resume/       # recuperação de falhas de um run incompleto
+├── evaluation/   # scoring offline e determinístico
+├── academic/     # geração de PDF acadêmico orientado por ABNT
+├── reports/      # renderização de relatório Markdown
+├── providers/    # providers de LLM/busca OpenAI / Anthropic / mock
+├── schemas/      # os modelos Pydantic do domínio
 ├── policies/     # ExecutionPolicy
 ├── services/     # ResearchOrchestrator, RunService
 ├── core/         # config, logging, exceptions
-└── cli/          # the thin Typer CLI + composition root
+└── cli/          # a CLI fina em Typer + composition root
 ```
 
-## Design Decisions
+## Decisões de Arquitetura
 
-**Why no LangChain/LangGraph?** This project implements its own tool registry, execution state, execution policy, evidence pipeline, synthesis validation, persistence, replay, and recovery — on purpose. That's the point of the project: to demonstrate these abstractions, not to wrap someone else's. This isn't a critique of those frameworks; it's a scope decision.
+**Por que não usar LangChain/LangGraph?** Este projeto implementa seu próprio tool registry, estado de execução, execution policy, pipeline de evidência, validação de síntese, persistência, replay, e recuperação — de propósito. Esse é o ponto do projeto: demonstrar essas abstrações, não embrulhar as de outra pessoa. Isso não é uma crítica a esses frameworks; é uma decisão de escopo.
 
-**Why a persisted `RunRecord` instead of an in-memory-only result?** Reproducibility and recovery both require a durable record of *what actually happened*, not just the final answer.
+**Por que um `RunRecord` persistido em vez de um resultado só em memória?** Reprodutibilidade e recuperação exigem um registro durável do que *de fato aconteceu*, não só a resposta final.
 
-**Why deterministic offline replay?** To prove a persisted run is internally self-consistent without spending API budget or depending on a model's non-determinism — and to have a fast, free regression check for the persistence/state-machine layer itself.
+**Por que replay offline determinístico?** Para provar que um run persistido é internamente auto-consistente sem gastar orçamento de API ou depender do não-determinismo de um modelo — e para ter uma checagem de regressão rápida e grátis da própria camada de estado/persistência.
 
-**Why a separate academic-report layer?** Turning a research artifact into a citable document is a presentation concern, not a research concern — keeping it in `app/academic/`, reading only an already-finalized `RunRecord`, means it can never accidentally re-trigger research or leak into the Agent's own logic.
+**Por que uma camada separada de relatório acadêmico?** Transformar um artefato de pesquisa em um documento citável é uma preocupação de apresentação, não de pesquisa — mantê-la em `app/academic/`, lendo apenas um `RunRecord` já finalizado, garante que ela nunca pode acidentalmente disparar uma nova pesquisa ou vazar pra dentro da lógica do próprio Agent.
 
-**Why evidence-first citations?** A citation that isn't derived from the evidence graph is indistinguishable from a fabricated one. Deriving citation numbers strictly from `Claim -> Evidence -> Source` is the only way to guarantee every reference in a report is real.
+**Por que citações a partir da evidência?** Uma citação que não vem do grafo de evidência é indistinguível de uma inventada. Derivar números de citação estritamente de `Claim -> Evidence -> Source` é a única forma de garantir que toda referência num relatório é real.
 
-**Why policy-based execution limits, checked before the operation?** Logging a violation after it already happened doesn't prevent the violation. Every limit in `ExecutionPolicy` is checked before the bounded action runs.
+**Por que limites de execução baseados em policy, verificados antes da operação?** Registrar uma violação depois que ela já aconteceu não impede a violação. Todo limite em `ExecutionPolicy` é verificado antes da ação limitada rodar.
 
-**Why mock providers for `use_mock_providers=true`?** `MockLLMProvider`/`MockSynthesisProvider` are scripted test doubles that replay a fixed list of responses — they cannot answer an arbitrary question. `run` refuses outright rather than silently producing a fake-looking "research" result.
+**Por que providers mock quando `use_mock_providers=true`?** `MockLLMProvider`/`MockSynthesisProvider` são dublês de teste roteirizados que reproduzem uma lista fixa de respostas — eles não conseguem responder a uma pergunta arbitrária. `run` se recusa de cara, em vez de produzir silenciosamente uma "pesquisa" com aparência real mas falsa.
 
-## Limitations
+## Limitações
 
-Stated plainly, not hidden:
+Ditas com clareza, não escondidas:
 
-- **Exactly-once is not guaranteed** for `resume` (see "Resume / Crash recovery").
-- **The resume lock is local**, not distributed — it protects concurrent processes on the same machine/`runs_dir`, not across machines sharing a network filesystem.
-- `OpenAIProvider`/`AnthropicProvider`/`RealSearchProvider` don't explicitly close their internal `httpx.AsyncClient` — harmless in a short-lived CLI process (confirmed empirically, no socket is opened until a request is made), relevant only if reused in a long-lived process outside the CLI.
-- **No real TLS handshake test** — the SSRF/DNS-pinning mechanism is audited and correct by construction (the connection target is pinned by validated IP; the logical hostname is never rewritten, so Host/SNI/certificate verification still run against it), but this is not proven against a real TLS server in the test suite, deliberately, rather than faking one.
-- **PDF text extraction** of accented Portuguese headings (e.g. "INTRODUÇÃO") can show `�` in copy-pasted text — a known `reportlab` limitation with non-embedded base-14 fonts. The **visual** rendering is always correct (confirmed by direct page-image inspection); this only affects text extraction/copy-paste of accented words.
-- No cost accounting in dollars (`estimated_cost_usd` stays `None` — token counts are tracked, pricing is not).
-- No packaging as an installable command (`python -m app.cli` is the only supported entry point — a deliberate choice for a portfolio-scoped project).
-- ABNT coverage is **oriented**, not exhaustive — see [docs/academic-report.md](docs/academic-report.md) for exactly what's implemented.
+- **Exactly-once não é garantido** para `resume` (ver "Resume / Recuperação de falhas").
+- **O lock de resume é local**, não distribuído — protege processos concorrentes na mesma máquina/`runs_dir`, não entre máquinas compartilhando um filesystem de rede.
+- `OpenAIProvider`/`AnthropicProvider`/`RealSearchProvider` não fecham explicitamente seu `httpx.AsyncClient` interno — inofensivo num processo de CLI de vida curta (confirmado empiricamente: nenhum socket é aberto até a primeira requisição), relevante só se reutilizados num processo de vida longa fora da CLI.
+- **Sem teste de handshake TLS real** — o mecanismo de pinning de SSRF/DNS é auditado e correto por construção (o alvo da conexão é fixado pelo IP já validado; o hostname lógico nunca é reescrito, então a verificação de Host/SNI/certificado continua rodando contra ele), mas isso não é provado contra um servidor TLS real na suíte de testes, deliberadamente, em vez de simular um de forma frágil.
+- **Extração de texto do PDF** de títulos acentuados em português (ex.: "INTRODUÇÃO") pode mostrar `�` no texto copiado — uma limitação conhecida do `reportlab` com fontes padrão (base-14) não incorporadas. A renderização **visual** está sempre correta (confirmado por inspeção direta da imagem da página); isso só afeta a extração/cópia de texto de palavras acentuadas.
+- Sem cálculo de custo em dólares (`estimated_cost_usd` permanece `None` — a contagem de tokens é rastreada, o preço não).
+- Sem empacotamento como comando instalável (`python -m app.cli` é o único ponto de entrada suportado — uma decisão deliberada para um projeto de escopo de portfólio).
+- A cobertura ABNT é **orientada**, não exaustiva — veja [docs/academic-report.md](docs/academic-report.md) para exatamente o que é implementado.
 
 ## Roadmap
 
-- [x] Agentic research loop
-- [x] Evidence/claim/citation tracking
-- [x] Synthesis with reference validation
-- [x] Atomic persistence + schema versioning
-- [x] Offline replay
-- [x] Checkpoints + crash recovery (resume)
-- [x] Deterministic evaluation framework
-- [x] ABNT-oriented academic PDF generation
-- [x] OpenAI + Anthropic providers
-- [ ] Distributed (not just local) resume locking
-- [ ] Cost accounting
-- [ ] Richer source metadata (author/publication date) where actually available
-- [ ] Additional academic document templates
+- [x] Loop de pesquisa agentic
+- [x] Rastreamento de evidência/claim/citação
+- [x] Síntese com validação de referências
+- [x] Persistência atômica + versionamento de schema
+- [x] Replay offline
+- [x] Checkpoints + recuperação de falhas (resume)
+- [x] Framework de avaliação determinístico
+- [x] Geração de PDF acadêmico orientado por ABNT
+- [x] Providers OpenAI + Anthropic
+- [ ] Lock de resume distribuído (não só local)
+- [ ] Cálculo de custo
+- [ ] Metadados de fonte mais ricos (autor/data de publicação) onde realmente disponíveis
+- [ ] Templates acadêmicos adicionais
 
-## Engineering Highlights
+## Destaques de Engenharia
 
-- Typed, validated contracts at every boundary (Pydantic models, Protocol-based providers) — an LLM never produces free text interpreted as a command.
-- Deterministic, atomic persistence with explicit schema versioning and no silent version assumptions.
-- A genuine crash-recovery story: checkpoint, detect incompleteness, resume from exactly where it stopped, with a documented (not hidden) exactly-once caveat.
-- Offline replay as a correctness proof, not just a demo feature.
-- A real SSRF defense (DNS-rebinding-resistant) validated under actual concurrency, not just unit-tested in isolation.
-- A structured evidence-to-citation pipeline reused, unmodified, by two different output formats (Markdown, ABNT PDF) — proof the abstraction is real, not accidental.
-- 649 tests covering the unhappy paths (crashes, concurrency, security, malformed input) as thoroughly as the happy one.
+- Contratos tipados e validados em cada fronteira (modelos Pydantic, providers baseados em Protocol) — um LLM nunca produz texto livre interpretado como comando.
+- Persistência determinística e atômica, com versionamento de schema explícito e nenhuma suposição silenciosa de versão.
+- Uma história real de recuperação de falhas: checkpoint, detecção de incompletude, retomada de exatamente onde parou, com uma ressalva de exactly-once documentada (não escondida).
+- Replay offline como uma prova de corretude, não só uma feature de demonstração.
+- Uma defesa real contra SSRF (resistente a DNS rebinding), validada sob concorrência de verdade, não só testada isoladamente.
+- Um pipeline estruturado de evidência-para-citação, reaproveitado sem modificação por dois formatos de saída diferentes (Markdown, PDF ABNT) — prova de que a abstração é real, não acidental.
+- 649 testes cobrindo os caminhos infelizes (crashes, concorrência, segurança, input malformado) tão bem quanto o caminho feliz.
 
-## License
+## Licença
 
-No license file exists in this repository, and none is implied. If you found this project and want to use it, ask first.
+Não existe arquivo de licença neste repositório, e nenhuma é implícita. Se você encontrou este projeto e quer usá-lo, pergunte antes.
